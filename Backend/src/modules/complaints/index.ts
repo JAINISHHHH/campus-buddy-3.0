@@ -1,0 +1,1 @@
+export { default as complaintRoutes } from "./complaint.routes.js";

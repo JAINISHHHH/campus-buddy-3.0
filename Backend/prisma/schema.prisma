@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  STUDENT
+  FACULTY
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id String @id @default(uuid())
+
+  email        String @unique
+  passwordHash String
+
+  role UserRole
+
+  isVerified Boolean @default(false)
+  isActive   Boolean @default(true)
+
+  student Student?
+  faculty Faculty?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Department {
+  id String @id @default(uuid())
+
+  name String
+
+  code String @unique
+
+  building String?
+
+  students Student[]
+
+  faculties Faculty[]
+
+  createdAt DateTime @default(now())
+}
+
+model Student {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  enrollmentNumber String @unique
+
+  firstName String
+
+  lastName String
+
+  semester Int
+
+  phone String?
+
+  profileImage String?
+
+  departmentId String
+
+  department Department @relation(fields: [departmentId], references: [id])
+
+  complaints Complaint[]
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model Faculty {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  employeeId String @unique
+
+  firstName String
+
+  lastName String
+
+  designation String
+
+  phone String?
+
+  departmentId String
+
+  department Department @relation(fields: [departmentId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+model ComplaintCategory {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+
+  complaints Complaint[]
+
+  createdAt DateTime @default(now())
+}
+
+model Complaint {
+  id String @id @default(uuid())
+
+  title       String
+  description String
+
+  status   ComplaintStatus   @default(PENDING)
+  priority ComplaintPriority @default(MEDIUM)
+
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  categoryId String
+  category   ComplaintCategory @relation(fields: [categoryId], references: [id])
+
+  comments    ComplaintComment[]
+  attachments ComplaintAttachment[]
+  history     ComplaintHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+model ComplaintComment {
+  id String @id @default(uuid())
+
+  complaintId String
+
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  message String
+
+  createdBy String
+
+  createdAt DateTime @default(now())
+}
+
+model ComplaintAttachment {
+  id String @id @default(uuid())
+
+  complaintId String
+
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  fileUrl String
+
+  createdAt DateTime @default(now())
+}
+
+model ComplaintHistory {
+  id String @id @default(uuid())
+
+  complaintId String
+
+  complaint Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+
+  status ComplaintStatus
+
+  remarks String?
+
+  updatedBy String
+
+  createdAt DateTime @default(now())
+}
+
+enum ComplaintStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ComplaintPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
