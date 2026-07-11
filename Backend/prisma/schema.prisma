@@ -223,6 +223,42 @@ model LostFound {
   updatedAt DateTime @updatedAt
 }
 
+model Event {
+  id String @id @default(uuid())
+
+  title       String
+  description String
+
+  eventType EventType
+
+  venue String
+
+  bannerUrl String?
+
+  startDate DateTime
+  endDate   DateTime
+
+  registrationDeadline DateTime
+
+  capacity Int
+
+  organizer String
+
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EventType {
+  TECHNICAL
+  CULTURAL
+  SPORTS
+  WORKSHOP
+  SEMINAR
+  OTHER
+}
+
 enum LostFoundType {
   LOST
   FOUND
