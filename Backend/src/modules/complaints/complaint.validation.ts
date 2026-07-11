@@ -36,5 +36,15 @@ export const updateComplaintStatusSchema = z.object({
 });
 
 export const complaintIdSchema = z.object({
-  id: z.string().uuid("Invalid Complaint ID"),
+  id: z
+    .string()
+    .uuid("Invalid Complaint ID"),
 });
+
+export type UpdateComplaintStatusInput = z.infer<
+  typeof updateComplaintStatusSchema
+>;
+
+export type CreateComplaintInput = z.infer<
+  typeof createComplaintSchema
+>;

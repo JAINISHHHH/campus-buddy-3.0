@@ -1,0 +1,1 @@
+export { default as attachmentRoutes } from "./attachment.routes.js";
