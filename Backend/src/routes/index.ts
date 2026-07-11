@@ -4,6 +4,7 @@ import { authRoutes } from "../modules/auth/index.js";
 import { userRoutes } from "../modules/users/index.js";
 import { complaintRoutes } from "../modules/complaints/index.js";
 import { adminRoutes } from "../modules/admin/index.js";
+import { notificationRoutes } from "../modules/notifications/index.js";
 
 const router = Router();
 
@@ -14,5 +15,7 @@ router.use("/users", userRoutes);
 router.use("/complaints", complaintRoutes);
 
 router.use("/admin", adminRoutes);
+
+router.use("/notifications", notificationRoutes);
 
 export default router;
