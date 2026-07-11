@@ -1,0 +1,1 @@
+export { default as lostFoundRoutes } from "./lostfound.routes.js";
