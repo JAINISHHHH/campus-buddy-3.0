@@ -1,67 +1,51 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware.js";
+import { asyncHandler } from "../../errors/asyncHandler.js";
+import { AppError } from "../../errors/AppError.js";
+
 import {
   uploadAttachment,
   getAttachments,
 } from "./attachment.service.js";
-import {
-  successResponse,
-  errorResponse,
-} from "../../utils/response.js";
 
-export const upload = async (
+import { successResponse } from "../../utils/response.js";
+
+export const upload = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    if (!req.file) {
-      return errorResponse(
-        res,
-        "Image is required",
-        400
-      );
-    }
-
-    const result = await uploadAttachment(
-      req.params.id as string,
-      req.file,
-      req.user!.userId
-    );
-
-    return successResponse(
-      res,
-      "Attachment uploaded successfully",
-      result,
-      201
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
+  if (!req.file) {
+    throw new AppError(
+      "Image is required",
       400
     );
   }
-};
 
-export const getAll = async (
+  const result = await uploadAttachment(
+    req.params.id,
+    req.file,
+    req.user!.userId
+  );
+
+  return successResponse(
+    res,
+    "Attachment uploaded successfully",
+    result,
+    201
+  );
+});
+
+export const getAll = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await getAttachments(
-      req.params.id as string
-    );
+  const result = await getAttachments(
+    req.params.id
+  );
 
-    return successResponse(
-      res,
-      "Attachments fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Attachments fetched successfully",
+    result
+  );
+});

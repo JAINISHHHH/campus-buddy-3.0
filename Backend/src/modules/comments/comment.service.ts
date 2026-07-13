@@ -1,4 +1,6 @@
 import prisma from "../../config/db.js";
+import { AppError } from "../../errors/AppError.js";
+
 import { CreateCommentInput } from "./comment.types.js";
 
 export const createComment = async (
@@ -13,7 +15,10 @@ export const createComment = async (
   });
 
   if (!complaint) {
-    throw new Error("Complaint not found");
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
   }
 
   const comment = await prisma.complaintComment.create({
@@ -39,6 +44,19 @@ export const createComment = async (
 export const getComments = async (
   complaintId: string
 ) => {
+  const complaint = await prisma.complaint.findUnique({
+    where: {
+      id: complaintId,
+    },
+  });
+
+  if (!complaint) {
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
+  }
+
   return prisma.complaintComment.findMany({
     where: {
       complaintId,
@@ -47,4 +65,31 @@ export const getComments = async (
       createdAt: "asc",
     },
   });
+};
+
+export const deleteComment = async (
+  commentId: string
+) => {
+  const comment = await prisma.complaintComment.findUnique({
+    where: {
+      id: commentId,
+    },
+  });
+
+  if (!comment) {
+    throw new AppError(
+      "Comment not found",
+      404
+    );
+  }
+
+  await prisma.complaintComment.delete({
+    where: {
+      id: commentId,
+    },
+  });
+
+  return {
+    message: "Comment deleted successfully",
+  };
 };

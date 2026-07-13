@@ -1,4 +1,6 @@
 import prisma from "../../config/db.js";
+import { AppError } from "../../errors/AppError.js";
+
 import {
   CreateLostFoundInput,
   UpdateLostFoundInput,
@@ -15,7 +17,10 @@ export const createLostFound = async (
   });
 
   if (!student) {
-    throw new Error("Student profile not found");
+    throw new AppError(
+      "Student profile not found",
+      404
+    );
   }
 
   return prisma.lostFound.create({
@@ -30,6 +35,7 @@ export const createLostFound = async (
     include: {
       student: {
         select: {
+          id: true,
           firstName: true,
           lastName: true,
           enrollmentNumber: true,
@@ -44,6 +50,7 @@ export const getAllLostFound = async () => {
     include: {
       student: {
         select: {
+          id: true,
           firstName: true,
           lastName: true,
           enrollmentNumber: true,
@@ -59,13 +66,14 @@ export const getAllLostFound = async () => {
 export const getLostFoundById = async (
   id: string
 ) => {
-  const item = await prisma.lostFound.findUnique({
+  const post = await prisma.lostFound.findUnique({
     where: {
       id,
     },
     include: {
       student: {
         select: {
+          id: true,
           firstName: true,
           lastName: true,
           enrollmentNumber: true,
@@ -74,25 +82,31 @@ export const getLostFoundById = async (
     },
   });
 
-  if (!item) {
-    throw new Error("Post not found");
+  if (!post) {
+    throw new AppError(
+      "Post not found",
+      404
+    );
   }
 
-  return item;
+  return post;
 };
 
 export const updateLostFound = async (
   id: string,
   data: UpdateLostFoundInput
 ) => {
-  const exists = await prisma.lostFound.findUnique({
+  const post = await prisma.lostFound.findUnique({
     where: {
       id,
     },
   });
 
-  if (!exists) {
-    throw new Error("Post not found");
+  if (!post) {
+    throw new AppError(
+      "Post not found",
+      404
+    );
   }
 
   return prisma.lostFound.update({
@@ -106,14 +120,17 @@ export const updateLostFound = async (
 export const deleteLostFound = async (
   id: string
 ) => {
-  const exists = await prisma.lostFound.findUnique({
+  const post = await prisma.lostFound.findUnique({
     where: {
       id,
     },
   });
 
-  if (!exists) {
-    throw new Error("Post not found");
+  if (!post) {
+    throw new AppError(
+      "Post not found",
+      404
+    );
   }
 
   await prisma.lostFound.delete({

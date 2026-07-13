@@ -1,67 +1,43 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware.js";
+import { asyncHandler } from "../../errors/asyncHandler.js";
+
 import {
   createComment,
   getComments,
 } from "./comment.service.js";
-import {
-  successResponse,
-  errorResponse,
-} from "../../utils/response.js";
 
-export const create = async (
+import { successResponse } from "../../utils/response.js";
+
+export const create = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    console.log("Comment Params:", req.params);
+  const result = await createComment(
+    req.params.id,
+    req.user!.userId,
+    req.body
+  );
 
-    const complaintId = req.params.id as string;
+  return successResponse(
+    res,
+    "Comment added successfully",
+    result,
+    201
+  );
+});
 
-    const result = await createComment(
-      complaintId,
-      req.user!.userId,
-      req.body
-    );
-
-    return successResponse(
-      res,
-      "Comment added successfully",
-      result,
-      201
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
-
-export const getAll = async (
+export const getAll = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    console.log("Comment Params:", req.params);
+  const result = await getComments(
+    req.params.id
+  );
 
-    const complaintId = req.params.id as string;
-
-    const result = await getComments(
-      complaintId
-    );
-
-    return successResponse(
-      res,
-      "Comments fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Comments fetched successfully",
+    result
+  );
+});

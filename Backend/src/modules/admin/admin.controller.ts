@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { asyncHandler } from "../../errors/asyncHandler.js";
+
 import {
   getDashboard,
   getAllComplaints,
@@ -6,91 +8,56 @@ import {
   getAllFaculty,
 } from "./admin.service.js";
 
-import {
-  successResponse,
-  errorResponse,
-} from "../../utils/response.js";
+import { successResponse } from "../../utils/response.js";
 
-export const dashboard = async (
+export const dashboard = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await getDashboard();
+  const result = await getDashboard();
 
-    return successResponse(
-      res,
-      "Dashboard fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      500
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Dashboard fetched successfully",
+    result
+  );
+});
 
-export const complaints = async (
+export const complaints = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await getAllComplaints();
+  const result = await getAllComplaints();
 
-    return successResponse(
-      res,
-      "Complaints fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      500
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Complaints fetched successfully",
+    result
+  );
+});
 
-export const students = async (
+export const students = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await getAllStudents();
+  const result = await getAllStudents();
 
-    return successResponse(
-      res,
-      "Students fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      500
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Students fetched successfully",
+    result
+  );
+});
 
-export const faculty = async (
+export const faculty = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await getAllFaculty();
+  const result = await getAllFaculty();
 
-    return successResponse(
-      res,
-      "Faculty fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      500
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Faculty fetched successfully",
+    result
+  );
+});

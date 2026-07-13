@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 
+import { asyncHandler } from "../../errors/asyncHandler.js";
+
 import {
   createEvent,
   getAllEvents,
@@ -8,119 +10,76 @@ import {
   deleteEvent,
 } from "./event.service.js";
 
-import {
-  successResponse,
-  errorResponse,
-} from "../../utils/response.js";
+import { successResponse } from "../../utils/response.js";
 
-export const create = async (
+export const create = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await createEvent(req.body);
+  const result = await createEvent(req.body);
 
-    return successResponse(
-      res,
-      "Event created successfully",
-      result,
-      201
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Event created successfully",
+    result,
+    201
+  );
+});
 
-export const getAll = async (
+export const getAll = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await getAllEvents();
+  const result = await getAllEvents();
 
-    return successResponse(
-      res,
-      "Events fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Events fetched successfully",
+    result
+  );
+});
 
-export const getOne = async (
+export const getOne = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await getEvent(
-      req.params.id as string
-    );
+  const result = await getEvent(
+    req.params.id as string
+  );
 
-    return successResponse(
-      res,
-      "Event fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      404
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Event fetched successfully",
+    result
+  );
+});
 
-export const update = async (
+export const update = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await updateEvent(
-      req.params.id as string,
-      req.body
-    );
+  const result = await updateEvent(
+    req.params.id as string,
+    req.body
+  );
 
-    return successResponse(
-      res,
-      "Event updated successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Event updated successfully",
+    result
+  );
+});
 
-export const remove = async (
+export const remove = asyncHandler(async (
   req: Request,
   res: Response
 ) => {
-  try {
-    const result = await deleteEvent(
-      req.params.id as string
-    );
+  const result = await deleteEvent(
+    req.params.id as string
+  );
 
-    return successResponse(
-      res,
-      result.message
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    result.message
+  );
+});

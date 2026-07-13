@@ -1,4 +1,5 @@
 import prisma from "../../config/db.js";
+import { AppError } from "../../errors/AppError.js";
 
 export const uploadAttachment = async (
   complaintId: string,
@@ -12,7 +13,10 @@ export const uploadAttachment = async (
   });
 
   if (!complaint) {
-    throw new Error("Complaint not found");
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
   }
 
   const attachment = await prisma.complaintAttachment.create({
@@ -37,6 +41,19 @@ export const uploadAttachment = async (
 export const getAttachments = async (
   complaintId: string
 ) => {
+  const complaint = await prisma.complaint.findUnique({
+    where: {
+      id: complaintId,
+    },
+  });
+
+  if (!complaint) {
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
+  }
+
   return prisma.complaintAttachment.findMany({
     where: {
       complaintId,
@@ -45,4 +62,32 @@ export const getAttachments = async (
       createdAt: "desc",
     },
   });
+};
+
+export const deleteAttachment = async (
+  attachmentId: string
+) => {
+  const attachment =
+    await prisma.complaintAttachment.findUnique({
+      where: {
+        id: attachmentId,
+      },
+    });
+
+  if (!attachment) {
+    throw new AppError(
+      "Attachment not found",
+      404
+    );
+  }
+
+  await prisma.complaintAttachment.delete({
+    where: {
+      id: attachmentId,
+    },
+  });
+
+  return {
+    message: "Attachment deleted successfully",
+  };
 };

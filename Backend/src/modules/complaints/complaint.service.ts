@@ -1,4 +1,6 @@
 import prisma from "../../config/db.js";
+import { AppError } from "../../errors/AppError.js";
+
 import {
   CreateComplaintInput,
   UpdateComplaintStatusInput,
@@ -15,7 +17,10 @@ export const createComplaint = async (
   });
 
   if (!student) {
-    throw new Error("Student profile not found");
+    throw new AppError(
+      "Student profile not found",
+      404
+    );
   }
 
   const category = await prisma.complaintCategory.findUnique({
@@ -25,7 +30,10 @@ export const createComplaint = async (
   });
 
   if (!category) {
-    throw new Error("Complaint category not found");
+    throw new AppError(
+      "Complaint category not found",
+      404
+    );
   }
 
   const complaint = await prisma.complaint.create({
@@ -71,7 +79,10 @@ export const getMyComplaints = async (
   });
 
   if (!student) {
-    throw new Error("Student profile not found");
+    throw new AppError(
+      "Student profile not found",
+      404
+    );
   }
 
   return prisma.complaint.findMany({
@@ -103,7 +114,10 @@ export const getComplaintById = async (
   });
 
   if (!student) {
-    throw new Error("Student profile not found");
+    throw new AppError(
+      "Student profile not found",
+      404
+    );
   }
 
   const complaint = await prisma.complaint.findFirst({
@@ -124,7 +138,10 @@ export const getComplaintById = async (
   });
 
   if (!complaint) {
-    throw new Error("Complaint not found");
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
   }
 
   return complaint;
@@ -142,7 +159,10 @@ export const updateComplaintStatus = async (
   });
 
   if (!complaint) {
-    throw new Error("Complaint not found");
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
   }
 
   const updatedComplaint = await prisma.complaint.update({
@@ -181,7 +201,10 @@ export const deleteComplaint = async (
   });
 
   if (!student) {
-    throw new Error("Student profile not found");
+    throw new AppError(
+      "Student profile not found",
+      404
+    );
   }
 
   const complaint = await prisma.complaint.findFirst({
@@ -192,11 +215,17 @@ export const deleteComplaint = async (
   });
 
   if (!complaint) {
-    throw new Error("Complaint not found");
+    throw new AppError(
+      "Complaint not found",
+      404
+    );
   }
 
   if (complaint.status !== "PENDING") {
-    throw new Error("Only pending complaints can be deleted.");
+    throw new AppError(
+      "Only pending complaints can be deleted.",
+      400
+    );
   }
 
   await prisma.complaintHistory.create({

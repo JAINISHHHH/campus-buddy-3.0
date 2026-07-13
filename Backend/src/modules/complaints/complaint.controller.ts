@@ -1,5 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware.js";
+import { asyncHandler } from "../../errors/asyncHandler.js";
+
 import {
   createComplaint,
   getMyComplaints,
@@ -7,103 +9,85 @@ import {
   updateComplaintStatus,
   deleteComplaint,
 } from "./complaint.service.js";
-import { successResponse, errorResponse } from "../../utils/response.js";
 
-export const create = async (
+import { successResponse } from "../../utils/response.js";
+
+export const create = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await createComplaint(req.user!.userId, req.body);
+  const result = await createComplaint(
+    req.user!.userId,
+    req.body
+  );
 
-    return successResponse(
-      res,
-      "Complaint submitted successfully",
-      result,
-      201
-    );
-  } catch (error: any) {
-    return errorResponse(res, error.message, 400);
-  }
-};
+  return successResponse(
+    res,
+    "Complaint submitted successfully",
+    result,
+    201
+  );
+});
 
-export const getMy = async (
+export const getMy = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await getMyComplaints(req.user!.userId);
+  const result = await getMyComplaints(
+    req.user!.userId
+  );
 
-    return successResponse(
-      res,
-      "Complaints fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(res, error.message, 400);
-  }
-};
+  return successResponse(
+    res,
+    "Complaints fetched successfully",
+    result
+  );
+});
 
-export const getOne = async (
+export const getOne = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await getComplaintById(
-      req.params.id as string,
-      req.user!.userId
-    );
+  const result = await getComplaintById(
+    req.params.id,
+    req.user!.userId
+  );
 
-    return successResponse(
-      res,
-      "Complaint fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(res, error.message, 404);
-  }
-};
+  return successResponse(
+    res,
+    "Complaint fetched successfully",
+    result
+  );
+});
 
-export const updateStatus = async (
+export const updateStatus = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await updateComplaintStatus(
-      req.params.id as string,
-      req.body,
-      req.user!.userId
-    );
+  const result = await updateComplaintStatus(
+    req.params.id,
+    req.body,
+    req.user!.userId
+  );
 
-    return successResponse(
-      res,
-      "Complaint status updated successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(res, error.message, 400);
-  }
-};
+  return successResponse(
+    res,
+    "Complaint status updated successfully",
+    result
+  );
+});
 
-export const remove = async (
+export const remove = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await deleteComplaint(
-      req.params.id as string,
-      req.user!.userId
-    );
+  const result = await deleteComplaint(
+    req.params.id,
+    req.user!.userId
+  );
 
-    return successResponse(
-      res,
-      result.message
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    result.message
+  );
+});

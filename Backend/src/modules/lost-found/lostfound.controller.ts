@@ -1,5 +1,6 @@
 import { Response } from "express";
 import { AuthRequest } from "../../middleware/auth.middleware.js";
+import { asyncHandler } from "../../errors/asyncHandler.js";
 
 import {
   createLostFound,
@@ -9,122 +10,79 @@ import {
   deleteLostFound,
 } from "./lostfound.service.js";
 
-import {
-  successResponse,
-  errorResponse,
-} from "../../utils/response.js";
+import { successResponse } from "../../utils/response.js";
 
-export const create = async (
+export const create = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await createLostFound(
-      req.user!.userId,
-      req.body
-    );
+  const result = await createLostFound(
+    req.user!.userId,
+    req.body
+  );
 
-    return successResponse(
-      res,
-      "Post created successfully",
-      result,
-      201
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Post created successfully",
+    result,
+    201
+  );
+});
 
-export const getAll = async (
+export const getAll = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await getAllLostFound();
+  const result = await getAllLostFound();
 
-    return successResponse(
-      res,
-      "Posts fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Posts fetched successfully",
+    result
+  );
+});
 
-export const getOne = async (
+export const getOne = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await getLostFoundById(
-      req.params.id as string
-    );
+  const result = await getLostFoundById(
+    req.params.id
+  );
 
-    return successResponse(
-      res,
-      "Post fetched successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      404
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Post fetched successfully",
+    result
+  );
+});
 
-export const update = async (
+export const update = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await updateLostFound(
-      req.params.id as string,
-      req.body
-    );
+  const result = await updateLostFound(
+    req.params.id,
+    req.body
+  );
 
-    return successResponse(
-      res,
-      "Post updated successfully",
-      result
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    "Post updated successfully",
+    result
+  );
+});
 
-export const remove = async (
+export const remove = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  try {
-    const result = await deleteLostFound(
-      req.params.id as string
-    );
+  const result = await deleteLostFound(
+    req.params.id
+  );
 
-    return successResponse(
-      res,
-      result.message
-    );
-  } catch (error: any) {
-    return errorResponse(
-      res,
-      error.message,
-      400
-    );
-  }
-};
+  return successResponse(
+    res,
+    result.message
+  );
+});

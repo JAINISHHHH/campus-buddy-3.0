@@ -1,7 +1,10 @@
 import prisma from "../../config/db.js";
+import { AppError } from "../../errors/AppError.js";
 
-export const getCurrentUser = async (userId: string) => {
-  return prisma.user.findUnique({
+export const getCurrentUser = async (
+  userId: string
+) => {
+  const user = await prisma.user.findUnique({
     where: {
       id: userId,
     },
@@ -40,4 +43,13 @@ export const getCurrentUser = async (userId: string) => {
       },
     },
   });
+
+  if (!user) {
+    throw new AppError(
+      "User not found",
+      404
+    );
+  }
+
+  return user;
 };

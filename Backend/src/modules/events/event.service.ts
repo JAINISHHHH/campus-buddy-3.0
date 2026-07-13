@@ -1,4 +1,5 @@
 import prisma from "../../config/db.js";
+import { AppError } from "../../errors/AppError.js";
 
 import {
   CreateEventInput,
@@ -38,7 +39,10 @@ export const getEvent = async (
   });
 
   if (!event) {
-    throw new Error("Event not found");
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   return event;
@@ -48,14 +52,17 @@ export const updateEvent = async (
   id: string,
   data: UpdateEventInput
 ) => {
-  const exists = await prisma.event.findUnique({
+  const event = await prisma.event.findUnique({
     where: {
       id,
     },
   });
 
-  if (!exists) {
-    throw new Error("Event not found");
+  if (!event) {
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   return prisma.event.update({
@@ -82,14 +89,17 @@ export const updateEvent = async (
 export const deleteEvent = async (
   id: string
 ) => {
-  const exists = await prisma.event.findUnique({
+  const event = await prisma.event.findUnique({
     where: {
       id,
     },
   });
 
-  if (!exists) {
-    throw new Error("Event not found");
+  if (!event) {
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   await prisma.event.delete({
