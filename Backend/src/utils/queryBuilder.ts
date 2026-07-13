@@ -16,7 +16,6 @@ export const buildQuery = (
   const limit = Number(query.limit) || 10;
 
   const skip = (page - 1) * limit;
-
   const take = limit;
 
   const where: Prisma.ComplaintWhereInput = {};
@@ -25,19 +24,20 @@ export const buildQuery = (
     where.OR = searchableFields.map((field) => ({
       [field]: {
         contains: query.search,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
-    }));
+    })) as Prisma.ComplaintWhereInput["OR"];
   }
 
-  const orderBy = query.sortBy
-    ? {
-        [query.sortBy]:
-          query.order === "desc" ? "desc" : "asc",
-      }
-    : {
-        createdAt: "desc",
-      };
+  const orderBy: Prisma.ComplaintOrderByWithRelationInput =
+    query.sortBy
+      ? ({
+          [query.sortBy]:
+            query.order === "desc" ? "desc" : "asc",
+        } as Prisma.ComplaintOrderByWithRelationInput)
+      : {
+          createdAt: "desc",
+        };
 
   return {
     skip,

@@ -33,9 +33,10 @@ export const getMy = asyncHandler(async (
   req: AuthRequest,
   res: Response
 ) => {
-  const result = await getMyComplaints(
-    req.user!.userId
-  );
+const result = await getMyComplaints(
+  req.user!.userId,
+  req.query
+);
 
   return successResponse(
     res,

@@ -1,5 +1,7 @@
 import prisma from "../../config/db.js";
 import { AppError } from "../../errors/AppError.js";
+import { buildQuery } from "../../utils/queryBuilder.js";
+import { paginationResponse } from "../../utils/paginationResponse.js";
 
 import {
   CreateComplaintInput,
@@ -70,7 +72,8 @@ export const createComplaint = async (
 };
 
 export const getMyComplaints = async (
-  userId: string
+  userId: string,
+  query: any
 ) => {
   const student = await prisma.student.findUnique({
     where: {
@@ -85,22 +88,43 @@ export const getMyComplaints = async (
     );
   }
 
-  return prisma.complaint.findMany({
-    where: {
-      studentId: student.id,
-    },
-    include: {
-      category: true,
-      history: {
-        orderBy: {
-          createdAt: "desc",
+  const {
+    skip,
+    take,
+    where,
+    orderBy,
+    page,
+    limit,
+  } = buildQuery(query, [
+    "title",
+    "description",
+  ]);
+
+  where.studentId = student.id;
+
+  const [complaints, total] =
+    await prisma.$transaction([
+      prisma.complaint.findMany({
+        where,
+        include: {
+          category: true,
         },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+        skip,
+        take,
+        orderBy,
+      }),
+
+      prisma.complaint.count({
+        where,
+      }),
+    ]);
+
+  return paginationResponse(
+    complaints,
+    total,
+    page,
+    limit
+  );
 };
 
 export const getComplaintById = async (
